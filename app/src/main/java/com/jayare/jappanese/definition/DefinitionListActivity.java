@@ -31,6 +31,7 @@ import butterknife.ButterKnife;
 
 public class DefinitionListActivity extends AppCompatActivity {
     public static final int ADD_DEFINITION_REQUEST = 1;
+    public static final int EDIT_DEFINITION_REQUEST = 2;
     public String ACTIVITY_CATEGORY;
     @BindView(R.id.recycler_view)
     RecyclerView recyclerView;
@@ -53,7 +54,7 @@ public class DefinitionListActivity extends AppCompatActivity {
         buttonAddDefinition.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DefinitionListActivity.this, AddDefinitionActivity.class);
+                Intent intent = new Intent(DefinitionListActivity.this, AddEditDefinitionActivity.class);
                 startActivityForResult(intent, ADD_DEFINITION_REQUEST);
             }
         });
@@ -99,6 +100,20 @@ public class DefinitionListActivity extends AppCompatActivity {
 
             }
         }).attachToRecyclerView(recyclerView);
+
+        adapter.setOnItemClickListener(new DefinitionAdapter.OnItemClickListener() {
+                                           @Override
+                                           public void onItemClick(Definition definition) {
+                                               Intent intent = new Intent(DefinitionListActivity.this, AddEditDefinitionActivity.class);
+                                               intent.putExtra(AddEditDefinitionActivity.EXTRA_ID, definition.getId());
+                                               intent.putExtra(AddEditDefinitionActivity.EXTRA_JAPANESE, definition.getJapanese());
+                                               intent.putExtra(AddEditDefinitionActivity.EXTRA_ENGLISH, definition.getEnglish());
+                                               intent.putExtra(AddEditDefinitionActivity.EXTRA_FURIGANA, definition.getFurigana());
+                                               intent.putExtra(AddEditDefinitionActivity.EXTRA_CATEGORY, definition.getCategory());
+                                               startActivityForResult(intent, EDIT_DEFINITION_REQUEST);
+                                           }
+                                       }
+        );
     }
 
     @Override
@@ -106,17 +121,35 @@ public class DefinitionListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ADD_DEFINITION_REQUEST && resultCode == RESULT_OK) {
-            String english = data.getStringExtra(AddDefinitionActivity.EXTRA_ENGLISH);
-            String furigana = data.getStringExtra(AddDefinitionActivity.EXTRA_FURIGANA);
-            String japanese = data.getStringExtra(AddDefinitionActivity.EXTRA_JAPANESE);
+            String english = data.getStringExtra(AddEditDefinitionActivity.EXTRA_ENGLISH);
+            String furigana = data.getStringExtra(AddEditDefinitionActivity.EXTRA_FURIGANA);
+            String japanese = data.getStringExtra(AddEditDefinitionActivity.EXTRA_JAPANESE);
 
             /**
-                Take the Category from the {@link CategorySelectionActivity} and set it here
-            */
+             Take the Category from the {@link CategorySelectionActivity} and set it here
+             */
             Definition definition = new Definition(english, japanese, furigana, ACTIVITY_CATEGORY);
             definitionViewModel.insert(definition);
 
             Toast.makeText(this, "Definition saved", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == EDIT_DEFINITION_REQUEST && resultCode == RESULT_OK) {
+            int id = data.getIntExtra(AddEditDefinitionActivity.EXTRA_ID,-1);
+
+            if(id == -1){
+                Toast.makeText(this, "Definition cannot be updated", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String english = data.getStringExtra(AddEditDefinitionActivity.EXTRA_ENGLISH);
+            String furigana = data.getStringExtra(AddEditDefinitionActivity.EXTRA_FURIGANA);
+            String japanese = data.getStringExtra(AddEditDefinitionActivity.EXTRA_JAPANESE);
+            String category = data.getStringExtra(AddEditDefinitionActivity.EXTRA_CATEGORY);
+            Definition definition = new Definition(english, japanese, furigana, category);
+            definition.setId(id);
+
+            definitionViewModel.update(definition);
+
+            Toast.makeText(this, "Definition updated", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Definition not saved", Toast.LENGTH_SHORT).show();
         }

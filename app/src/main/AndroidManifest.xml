@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.jayare.jappanese.definition.AddDefinitionActivity"
+            android:name="com.jayare.jappanese.definition.AddEditDefinitionActivity"
             android:parentActivityName="com.jayare.jappanese.VocabularyActivity" />
         <activity
             android:name="com.jayare.jappanese.VocabularyActivity"

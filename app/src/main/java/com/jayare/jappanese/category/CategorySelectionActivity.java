@@ -14,10 +14,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.jayare.jappanese.definition.AddEditDefinitionActivity;
 import com.jayare.jappanese.definition.DefinitionViewModel;
 import com.jayare.jappanese.R;
 import com.jayare.jappanese.adapter.CategoryAdapter;
-import com.jayare.jappanese.definition.AddDefinitionActivity;
 import com.jayare.jappanese.definition.Definition;
 import com.jayare.jappanese.definition.DefinitionListActivity;
 
@@ -74,7 +74,7 @@ public class CategorySelectionActivity extends AppCompatActivity implements Cate
 
     @OnClick(R.id.btn_add_definition_with_category)
     public void AddDefinition(View view) {
-        Intent intent = new Intent(CategorySelectionActivity.this, AddDefinitionActivity.class);
+        Intent intent = new Intent(CategorySelectionActivity.this, AddEditDefinitionActivity.class);
         startActivityForResult(intent, ADD_DEFINITION_REQUEST);
     }
 
@@ -122,10 +122,10 @@ public class CategorySelectionActivity extends AppCompatActivity implements Cate
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ADD_DEFINITION_REQUEST && resultCode == RESULT_OK) {
-            String english = data.getStringExtra(AddDefinitionActivity.EXTRA_ENGLISH);
-            String furigana = data.getStringExtra(AddDefinitionActivity.EXTRA_FURIGANA);
-            String japanese = data.getStringExtra(AddDefinitionActivity.EXTRA_JAPANESE);
-            String category = data.getStringExtra(AddDefinitionActivity.EXTRA_CATEGORY);
+            String english = data.getStringExtra(AddEditDefinitionActivity.EXTRA_ENGLISH);
+            String furigana = data.getStringExtra(AddEditDefinitionActivity.EXTRA_FURIGANA);
+            String japanese = data.getStringExtra(AddEditDefinitionActivity.EXTRA_JAPANESE);
+            String category = data.getStringExtra(AddEditDefinitionActivity.EXTRA_CATEGORY);
             Definition definition = new Definition(english, japanese, furigana, category);
             definitionViewModel.insert(definition);
 

@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class AddDefinitionActivity extends AppCompatActivity {
+public class AddEditDefinitionActivity extends AppCompatActivity {
     private static final String TAG = "AddDefinitionActivity";
     @BindView(R.id.edit_text_english)
     EditText editTextEnglish;
@@ -38,6 +38,9 @@ public class AddDefinitionActivity extends AppCompatActivity {
     private String callingActivityName;
     private EditText editTextCategory;
     LinearLayout layout;
+
+    public static final String EXTRA_ID =
+            "com.jayare.jappanesev3.EXTRA_ID";
 
     public static final String EXTRA_ENGLISH =
             "com.jayare.jappanesev3.EXTRA_ENGLISH";
@@ -59,12 +62,29 @@ public class AddDefinitionActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         callingActivityName = this.getCallingActivity().getClassName();
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
-        setTitle("Add Definition");
 
         /**
          * Dynamically add category edit text if this is called from {@link CategorySelectionActivity}
          */
         layout = (LinearLayout) findViewById(R.id.add_definition_layout);
+
+        Intent intent = getIntent();
+
+        if (intent.hasExtra(EXTRA_ID)) {
+            setTitle("Edit Definition");
+            editTextJapanese.setText(intent.getStringExtra(EXTRA_JAPANESE));
+            editTextFurigana.setText(intent.getStringExtra(EXTRA_FURIGANA));
+            editTextEnglish.setText(intent.getStringExtra(EXTRA_ENGLISH));
+            editTextCategory = new EditText(this);
+            editTextCategory.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+            editTextCategory.setText(intent.getStringExtra(EXTRA_CATEGORY));
+            layout.addView(editTextCategory, 3);
+
+
+            //TODO enable editing the category
+        } else setTitle("Add Definition");
+
 
         if (callingActivityName.equalsIgnoreCase(CategorySelectionActivity.class.getName())) {
             //Add Category EditText
@@ -81,8 +101,8 @@ public class AddDefinitionActivity extends AppCompatActivity {
         String english = editTextEnglish.getText().toString();
         String furigana = editTextFurigana.getText().toString();
         String japanese = editTextJapanese.getText().toString();
-        String category = callingActivityName.equalsIgnoreCase(CategorySelectionActivity.class.getName())
-                ? editTextCategory.getText().toString() : null;
+        String category = editTextCategory != null //callingActivityName.equalsIgnoreCase(CategorySelectionActivity.class.getName())
+                ? editTextCategory.getText().toString() : "";
 
         if (english.trim().isEmpty() || japanese.trim().isEmpty()) {
             Toast.makeText(this, "Enter a valid definition!", Toast.LENGTH_SHORT).show();
@@ -104,7 +124,11 @@ public class AddDefinitionActivity extends AppCompatActivity {
         data.putExtra(EXTRA_ENGLISH, english);
         data.putExtra(EXTRA_FURIGANA, furigana);
         data.putExtra(EXTRA_JAPANESE, japanese);
-
+        data.putExtra(EXTRA_CATEGORY, category);
+        int id = getIntent().getIntExtra(EXTRA_ID, -1);
+        if (id != -1) {
+            data.putExtra(EXTRA_ID, id);
+        }
         if (callingActivityName.equalsIgnoreCase(CategorySelectionActivity.class.getName())) {
             data.putExtra(EXTRA_CATEGORY, category);
         }

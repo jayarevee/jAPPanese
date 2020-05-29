@@ -20,7 +20,7 @@ import butterknife.ButterKnife;
 public class DefinitionAdapter extends RecyclerView.Adapter<DefinitionAdapter.DefintionHolder> {
 
     private List<Definition> definitions = new ArrayList<>();
-
+    private OnItemClickListener listener;
 
     @NonNull
     @Override
@@ -55,7 +55,6 @@ public class DefinitionAdapter extends RecyclerView.Adapter<DefinitionAdapter.De
     }
 
 
-
     class DefintionHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.txtEnglish)
         TextView textEnglish;
@@ -67,6 +66,24 @@ public class DefinitionAdapter extends RecyclerView.Adapter<DefinitionAdapter.De
         public DefintionHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (listener != null && position != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(definitions.get(position));
+                    }
+                }
+            });
         }
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Definition definition);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }
